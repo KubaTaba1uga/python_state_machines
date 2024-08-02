@@ -19,29 +19,29 @@ class Accumulator(sm.StateMachine):
     start_state = 0
 
     def get_next_values(self, state, input_):
-        if not self.validate_state(state):
+        if not self._validate_state(state):
             raise ValueError(state)
 
-        if not self.validate_input(input_):
+        if not self._validate_input(input_):
             raise ValueError(input_)
 
         output = state + input_
 
-        if not self.validate_output(output):
+        if not self._validate_output(output):
             raise ValueError(output)
 
         return output, output
 
     @classmethod
-    def validate_state(cls, state) -> bool:
+    def _validate_state(cls, state) -> bool:
         return isinstance(state, (int, float))
 
     @classmethod
-    def validate_input(cls, input_) -> bool:
+    def _validate_input(cls, input_) -> bool:
         return isinstance(input_, (int, float))
 
     @classmethod
-    def validate_output(cls, output) -> bool:
+    def _validate_output(cls, output) -> bool:
         return isinstance(output, (int, float))
 
 
