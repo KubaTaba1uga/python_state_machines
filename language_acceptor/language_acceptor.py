@@ -19,15 +19,15 @@ class LanguageAcceptor(sm.StateMachine):
     start_state = 0
 
     def get_next_values(self, state, input_):
-        if not self._validate_state(state):
-            raise ValueError(state)
-
-        if not self._validate_input(input_):
-            raise ValueError(input_)
+        self._validate_state(state)
+        self._validate_input(input_)
 
         next_state = self._get_next_state(state, input_)
+        output = next_state != 3
 
-        return next_state, next_state != 3
+        self._validate_output(output)
+
+        return next_state, output
 
     @classmethod
     def _get_next_state(self, state, input_):
@@ -40,16 +40,19 @@ class LanguageAcceptor(sm.StateMachine):
         return 3
 
     @classmethod
-    def _validate_state(cls, state) -> bool:
-        return state in [0, 1, 2, 3]
+    def _validate_state(cls, state):
+        if state not in [0, 1, 2, 3]:
+            raise ValueError(state)
 
     @classmethod
-    def _validate_input(cls, input_) -> bool:
-        return isinstance(input_, (str, chr))
+    def _validate_input(cls, input_):
+        if not isinstance(input_, (str, chr)):
+            raise ValueError(input_)
 
     @classmethod
-    def _validate_output(cls, output) -> bool:
-        return isinstance(output, bool)
+    def _validate_output(cls, output):
+        if not isinstance(output, bool):
+            raise ValueError(output)
 
 
 if __name__ == "__main__":
@@ -69,21 +72,21 @@ if __name__ == "__main__":
 
     la.start()
 
-    for forecast in truth_table:
-        print("Input:", forecast["input"])
+    for test in truth_table:
+        print("Input:", test["input"])
 
         state = la.state
 
-        if state != forecast["state"]:
-            print("Expected state:", forecast["state"])
+        if state != test["state"]:
+            print("Expected state:", test["state"])
             print("Actual state:", state)
             print("Language Acceptor tests failed")
             exit(1)
 
-        output = la.step(forecast["input"])
+        output = la.step(test["input"])
 
-        if output != forecast["output"]:
-            print("Expected output:", forecast["output"])
+        if output != test["output"]:
+            print("Expected output:", test["output"])
             print("Actual output:", output)
             print("Language Acceptor tests failed")
             exit(2)
